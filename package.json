@@ -9,9 +9,9 @@
     "dist": "electron-builder"
   },
   "build": {
-    "appId": "com.gritfy.sqsbrowser",
+    "appId": "com.gritfy.QueueB",
     "mac": {
-      "category": "sqsbrowser cloud productivity app"
+      "category": "QueueB cloud productivity app"
     }
   },
   "keywords": [

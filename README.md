@@ -2,7 +2,9 @@
 ![Apache license](https://img.shields.io/badge/License-Apache%202.0-greeb.svg)![Version](https://img.shields.io/badge/version-1.0.0-blue)
 
 
-QueueB is created with a motive to provide a client application to browse and manage Queue services of various cloud providers. 
+![QueueB](assets/QueueB-Connection-Established.png)
+
+**QueueB** is created with a motive to provide a client application to browse and manage Queue services of various cloud providers. 
 
 To begin with, the application is built to browse and manage AWS SQS queues. The application is built on Electron and Bootstrap and is designed to be self-hosted. 
 
@@ -73,6 +75,15 @@ You can install the application using the installer available in the [releases] 
 
 ### License
 Apache 2.0
+
+### Screenshots
+
+![QueueB](assets/QueueB-Connection-Established.png)
+
+![QueueB](assets/QueueB-Search.png)
+
+![QueueB](assets/QueueB-Error.png)
+
 
 ### For Contributions and Issues
 Please raise an issue or create a pull request for any feature requests or issues you find in the application. 

@@ -1,0 +1,36 @@
+{
+  "name": "QueueB",
+  "version": "1.0.0",
+  "description": "QueueB V1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.gritfy.sqsbrowser",
+    "mac": {
+      "category": "sqsbrowser cloud productivity app"
+    }
+  },
+  "keywords": [
+    "Queuebro"
+  ],
+  "author": "GitHub",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "electron": "^15.0.0",
+    "electron-builder": "^22.14.5"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ec2": "^3.36.0",
+    "@aws-sdk/client-sqs": "3.34.0",
+    "@aws-sdk/node-http-handler": "^3.32.0",
+    "@fortawesome/fontawesome-free": "^6.5.2",
+    "bootstrap": "^4.6.0",
+    "font-awesome": "^4.7.0",
+    "highlight.js": "^11.2.0",
+    "jquery": "^3.6.0"
+  }
+}

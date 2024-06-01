@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>window.jQuery = window.$ = require('jquery');</script>
+  <title>QueueB</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js"></script>
+  <style>
+    pre {
+      counter-reset: line-numbering !important;
+      background: white !important;
+      padding: 12px 10px 14px 10px !important;
+      width: auto !important;
+      color: black !important;
+      line-height: 100% !important;
+      min-height: 50vh !important;
+    }
+
+    .form-check {
+      padding-left: 1.5vh;
+    }
+
+
+
+    pre .line::before {
+      content: counter(line-numbering) !important;
+      counter-increment: line-numbering !important;
+      padding-right: 1em !important;
+      /* space after numbers */
+      padding-left: 8px !important;
+      width: 1.5em !important;
+      text-align: right !important;
+      opacity: 0.5 !important;
+      color: white !important;
+    }
+
+    .jumbotron {
+      padding-bottom: 0.2%;
+      padding-top: 0.2%;
+      /* border-bottom: 2px solid whitesmoke; */
+      background-color: transparent
+    }
+
+
+    .alert {
+      width: 100vh
+    }
+
+    mark {
+      background: crimson;
+      color: white;
+      font-weight: bold;
+    }
+
+    .headline {
+      margin-top: 3vh;
+      margin-left: 3vh;
+    }
+
+    textarea {
+      position: absolute;
+      left: -100%;
+    }
+
+    .form-control{
+      font-size: 14px;
+    }
+    body {
+      display: flex !important;
+      min-height: 100vh;
+      flex-direction: column;
+      background-image: url('./assets/white-patterns.avif');
+      font-size: 0.9rem;
+    }
+
+    .jumbotron {
+      margin-bottom: 0.2%;
+    }
+
+    .code-editor {
+      background-color: white !important;
+      color: black !important;
+      padding: 10px;
+      border-radius: 5px;
+      overflow: auto;
+      width: auto;
+      font-family: 'Courier New', Courier, monospace;
+      height: 300px;
+      white-space: pre-wrap;
+      /* css-3 */
+      white-space: -moz-pre-wrap;
+      /* Mozilla, since 1999 */
+      white-space: -pre-wrap;
+      /* Opera 4-6 */
+      white-space: -o-pre-wrap;
+      /* Opera 7 */
+      word-wrap: break-word;
+      /* Internet Explorer 5.5+ */
+      border: 0.3px #80808070 solid;
+    }
+
+    footer {
+      margin-top: auto;
+    }
+
+    /* workspace box style */
+    #workspace {
+      /* border: 1px solid lightgray; */
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      /* background-color: #f2ecf5; */
+    }
+
+    .d-flex {
+      display: flex;
+    }
+
+    .align-items-center {
+      align-items: center;
+    }
+
+    
+
+    /* all input colors to whitesmoke */
+    input {
+      color: whitesmoke;
+    }
+
+    .align-middle {
+      vertical-align: middle;
+    }
+
+    .status-bar{
+      display: flex;
+      justify-content: end;
+    }
+
+    #alertsection {
+      display: flex;
+      justify-content: center;
+    }
+    
+    .left-header {
+      display: flex;
+      justify-content: start;
+      /* gradient */
+      /* border-bottom: 1px solid rgb(169, 145, 217); */
+    }
+
+    
+
+    .left-buttons {
+      display: flex;
+      justify-content: start;
+    }
+
+    .connect-btn {
+      background-color: #6f438f;
+      color: whitesmoke;
+      border: none;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .readmsg-btn {
+      background-color: #6f438f;
+      color: whitesmoke;
+      border: none;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .start-fresh-btn {
+      background-color: #6f438f;
+      color: whitesmoke;
+      border: none;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .copy-msg-btn {
+      background-color: #6f438f;
+      color: whitesmoke;
+      border: none;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #searchbox {
+      width: 50%;
+      margin-right: 1%;
+    }
+
+    #searchbtn {
+      background-color: #6f438f;
+      color: whitesmoke;
+      border: none;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    form {
+      margin-top: 4%;
+    }
+
+    #left-grid{
+      background-color: white;
+      padding: 5%;
+      border-radius: 5px;
+    }
+    #right-grid{
+      background-color: ghostwhite;
+      padding: 5%;
+      border-radius: 5px;
+      border-left: 1px whitesmoke solid;
+    }
+    
+    #notification-area{
+      margin-top: 0.7%;
+      justify-content: center;
+    }
+
+    .alert-info, 
+    .alert-primary
+    {
+      color: white;
+      background-color: #593b6e;
+      border-color: black;
+    }
+    .alert-success{
+      color: black;
+      background-color: #a9e1a9ad;
+      border-color: black;
+    }
+    .alert-danger {
+      color: black;
+      background-color: #e1a9dd;
+      border-color: #e1a9dd;
+    }
+    footer{
+      margin-top: 2%;
+    }
+    #tagline{
+      font-size: 14px;
+      color: gray;
+    }
+
+    #footer-link a{
+      color: rgba(0, 0, 0, 0.558);
+      padding: 10px;
+      display: flex;
+      align-content: center;
+    }
+
+    #banner-container{
+      margin-top: 1vh;
+      margin-bottom: 2vh;
+    }
+
+    #brand{
+      color: rgba(0, 0, 0, 0.822);
+      font-family: 'Jost', sans-serif;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+
+  <div class="jumbotron text-left">
+    <div class="container" id="banner-container">
+      <div class="row">
+        <div class="col-md-5 text-left d-flex align-items-center">
+          <!-- <img src="./assets/find-512.png" height="60vh" alt="gritfy" height="110vh"> -->
+          <div id="headline">
+            <h2 id="brand">QueueB</h2>
+            <p id="tagline">Cloud Queue Browser - Presently for AWS SQS</p>
+          </div>
+        </div>
+        <div class="col-md-7" id="notification-area">
+            <div class="row col-sm-12" id="alertsection">
+              <!-- this  would be dynamically filled -->
+            </div>
+            &nbsp;
+            <div hidden id="barprogress" class="progress row col-sm-12">
+              <!-- this would be dynamically filled -->
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="container" id="workspace">
+    <div class="row">
+      <div class="col-sm-5" id="left-grid">
+        <div class="left-header">
+          <h6>Connection Information</h6>
+        </div>
+        <form>
+          <div class="form-group">
+            <span class="material-symbols-outlined align-middle">globe</span>&nbsp;<label for="region">Region:</label>
+            <select class="form-control" id="region">
+              <!-- this would be dynamically filled -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <span class="material-symbols-outlined align-middle">account_circle</span>&nbsp;<label for="profile">Profile
+              Name:</label>
+            <input type="text" class="form-control" placeholder="Enter AWS CLI profile Name" id="profile">
+          </div>
+
+          <div hidden class="form-group" id="selectqueue">
+            <span class="material-symbols-outlined align-middle">queue</span>&nbsp;<label for="queue">Queue
+              Name:</label>
+            <select class="form-control" id="sqsqueue">
+              <option selected>Select Queue</option>
+              <!-- More options would be added dynamically -->
+            </select>
+          </div>
+
+          <!-- Checkbox to show read all messages
+          <div  class="form-group form-check" id="readall">
+            <input type="checkbox" class="form-check-input" id="readall">
+            <label class="form-check-label" for="readall">Read All Messages</label>
+          </div> -->
+
+          <div hidden class="form-group" id="noofmessages">
+            <span class="material-symbols-outlined align-middle">message</span>&nbsp;
+            <label for="msgno">No of Messages to read:</label>
+            <input type="number" class="form-control" placeholder="Enter Number of Messages to read at a time"
+              id="msgno">
+          </div>
+
+          <!-- Filter to apply on messages -->
+          <div hidden class="form-group" id="filter">
+            <span class="material-symbols-outlined align-middle">filter_alt</span>&nbsp;
+            <label for="filter">Filter:</label>
+            <input type="text" class="form-control" placeholder="Enter Message Filter Pattern" id="filterbox">
+          </div>
+
+          <div class="left-buttons">
+            <button hidden type="submit" class="btn readmsg-btn" id="actionbtn"> <span
+                class="material-symbols-outlined align-middle">downloading</span> browse</button>
+                &nbsp;
+            <button type="button" class="btn connect-btn" id="connection"><span
+                class="material-symbols-outlined align-middle">link</span> connect</button>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="col-sm-7" id="right-grid">
+        <!-- Status Bar with Total Messages - Display TODO -->
+        <!-- <div class="status-bar">
+          <p><span class="material-symbols-outlined align-middle">
+            done
+            </span> Total Messages read: 0</p>
+            &nbsp;
+            &nbsp;
+          <p><span class="material-symbols-outlined align-middle">
+            done_all
+            </span> Matching Messages: 0</p>
+          </div> -->
+        <div class="status-bar">
+          <input type="text" class="form-control" id="searchbox" placeholder="Search for a message">
+          <button type="button" class="btn btn-info" id="searchbtn"><span
+              class="material-symbols-outlined align-middle">search</span>Search</button>
+        </div>
+
+        &nbsp;
+        <pre class="code-editor" id="outbox"></pre>
+
+        <button type="button" class="btn btn-danger float-right start-fresh-btn" id="clearconsole"><span
+            class="material-symbols-outlined align-middle">restart_alt</span>reset</button>
+
+        <button type="button" class="btn btn-info float-right mr-2 copy-msg-btn" id="copymsg"><span
+            class="material-symbols-outlined align-middle">content_copy</span>copy</button>
+      </div>
+
+    </div>
+    
+    <script>
+      require('./renderer.js')
+    </script>
+    
+  </div>
+  
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+        
+        <p id="footer-link"><a href="https://github.com/aksarav/sqsbrowser"><img src="./assets/github.png" alt="github"> &nbsp; SQSBrowser V1.0</a>
+        </p>
+        </div>
+        <div class="col-md-6">
+          <p class="text-right"> With <img src="./assets/love.png" alt="gritfy" width="20" height="20"> From INDIA</p>
+        </div>
+      </div>
+  </footer>
+  <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+</body>
+
+</html>

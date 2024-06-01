@@ -33,19 +33,15 @@ const filter = document.querySelector("#filterbox")
 const searchbox = document.querySelector("#searchbox")
 const outbox = document.querySelector("#outbox")
 
-// Global Values
-const msgno_val = msgno.value
-const sqsqueue_val = sqsqueue.value
-const region_val = region.value
-const profile_val = profile.value
-const filter_val = filter.value
-const searchbox_val = searchbox
-const outbox_val = outbox
-
-
 
 check.addEventListener('click',checkconnection);
 searchbtn.addEventListener('click', searchText);
+
+function resetByNames(...names){
+    names.forEach(name => {
+        name.value = ""
+    });
+}
 
 function checkconnection(c){
     c.preventDefault();
@@ -79,7 +75,13 @@ function checkconnection(c){
 
         // hide the connection button
         check.setAttribute('hidden', true)
-    
+        
+        // disable the region and profile fields
+        region.setAttribute('disabled', true)
+        profile.setAttribute('disabled', true)
+        
+        resetByNames(msgno,filter,searchbox,outbox,sqsqueue)
+        
     }
     
   }
@@ -139,18 +141,6 @@ function submitform(e){
     ipc.send('listqueue', msgno, sqsqueue, region, profile, filter)
 }
 
-// ipc.on("zones", function(event, data){
-//     //console.log(data);
-//     // data.forEach((e,index) => {
-//     //     $("#region").append(
-//     //         '<option class="region">Select Queue</option>'
-//     //     );
-//     //     $(".region").last().text(e.toString());
-//     //     ////console.log(e.RegionName)
-//     //   });
-// })
-
-
 const shell = require('electron').shell;
 
 $(document).on('click', 'a[href^="http"]', function(event) {
@@ -178,7 +168,13 @@ function resetAll(){
     $("#filterbox").val("");
     $("#msgno").val("");
     $("#profile").val("");
+
+    // enable the region and profile fields
+    $("#region").removeAttr('disabled');
+    $("#profile").removeAttr('disabled');
 }
+
+
 $( document ).ready(function() {
     ////console.log( "Renderer is ready!" );
     const regions=['us-east-1','us-east-2','us-west-1','us-west-2','af-south-1','ap-east-1','ap-south-1','ap-northeast-3','ap-northeast-2','ap-southeast-1','ap-southeast-2','ap-northeast-1','ca-central-1','eu-central-1','eu-west-1','eu-west-2','eu-south-1','eu-west-3','eu-north-1','me-south-1','sa-east-1']
@@ -214,6 +210,7 @@ ipc.on('exception',function(event, data){
             $(".alerttext").last().text(data);
     }
     
+    resetAll()
     //$(".alerttext").last().text(data.toString());
 
 })
@@ -288,11 +285,8 @@ no_of_times_called = 1
 
 ipc.on('listqueue', function(event, response){
             
-            //console.log(response);
-            //console.log(typeof(response));
-            //console.log("Here it starts");
-            //let stringbuffer = '';
-            //outbox.textContent = '';
+            // Initialize the string buffer
+            stringbuffer = "";
             stringbuffer+="\n-----------------------------------"
             stringbuffer+="\nQueue Name :"+sqsqueue.value
             stringbuffer+="\nRegion     :"+region.value

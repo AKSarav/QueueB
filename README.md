@@ -2,7 +2,8 @@
 ![Apache license](https://img.shields.io/badge/License-Apache%202.0-greeb.svg)![Version](https://img.shields.io/badge/version-1.0.0-blue)
 
 
-![QueueB](assets/QueueB-Connection-Established.png)
+![QueueB](assets/QueueB-Demo.mp4)
+
 
 **QueueB** is created with a motive to provide a client application to browse and manage Queue services of various cloud providers. 
 

@@ -24,10 +24,6 @@
       min-height: 50vh !important;
     }
 
-    .form-check {
-      padding-left: 1.5vh;
-    }
-
 
 
     pre .line::before {
@@ -310,6 +306,17 @@
       font-family: 'Jost', sans-serif;
     }
 
+    #filterinfo{
+      text-decoration: underline;
+      color: gray;
+      font-size: 12px;
+    }
+
+    #filterinfo:hover{
+      cursor: help;
+      color: purple;
+    }
+
   </style>
 
 </head>
@@ -347,7 +354,7 @@
         </div>
         <form>
           <div class="form-group">
-            <span class="material-symbols-outlined align-middle">globe</span>&nbsp;<label for="region">Region:</label>
+            <span class="material-symbols-outlined align-middle">globe</span>&nbsp;<label for="region">Region*</label>
             <select class="form-control" id="region">
               <!-- this would be dynamically filled -->
             </select>
@@ -355,36 +362,34 @@
 
           <div class="form-group">
             <span class="material-symbols-outlined align-middle">account_circle</span>&nbsp;<label for="profile">Profile
-              Name:</label>
+              Name*</label>
             <input type="text" class="form-control" placeholder="Enter AWS CLI profile Name" id="profile">
           </div>
 
           <div hidden class="form-group" id="selectqueue">
             <span class="material-symbols-outlined align-middle">queue</span>&nbsp;<label for="queue">Queue
-              Name:</label>
+              Name*</label>
             <select class="form-control" id="sqsqueue">
               <option selected>Select Queue</option>
               <!-- More options would be added dynamically -->
             </select>
           </div>
 
-          <!-- Checkbox to show read all messages
-          <div  class="form-group form-check" id="readall">
-            <input type="checkbox" class="form-check-input" id="readall">
-            <label class="form-check-label" for="readall">Read All Messages</label>
-          </div> -->
-
           <div hidden class="form-group" id="noofmessages">
             <span class="material-symbols-outlined align-middle">message</span>&nbsp;
-            <label for="msgno">No of Messages to read:</label>
-            <input type="number" class="form-control" placeholder="Enter Number of Messages to read" id="msgno">
+            <label for="msgno">No of Messages to read*</label>
+            <input type="number" class="form-control" placeholder="-1 to read all messages" id="msgno">
           </div>
+
+          <!-- Check -->
 
           <!-- Filter to apply on messages -->
           <div hidden class="form-group" id="filter">
             <span class="material-symbols-outlined align-middle">filter_alt</span>&nbsp;
-            <label for="filter">Filter:</label>
+            <label for="filter">Filter</label>
             <input type="text" class="form-control" placeholder="Enter Message Filter Pattern" id="filterbox">
+            <span id="filterinfo" title="* Filter will be applied on the downloaded messages, Not on the entire queue 
+* If you wish to read all messages with matching filter, choose -1 in no of messages field">How Filter works</span>
           </div>
 
           <div class="left-buttons">
@@ -411,10 +416,11 @@
             </span> Matching Messages: 0</p>
           </div> -->
         <div class="status-bar">
-          <input type="text" class="form-control" id="searchbox" placeholder="Search for a message">
-          <button type="button" class="btn btn-info" id="searchbtn"><span
-              class="material-symbols-outlined align-middle">search</span>Search</button>
+            <input type="text" class="form-control" id="searchbox" placeholder="Search for a message">
+            <button type="button" class="btn btn-info" id="searchbtn"><span
+                class="material-symbols-outlined align-middle">search</span>Search</button>
         </div>
+        <small id="searchresult"></small>
 
         &nbsp;
         <pre class="code-editor" id="outbox"></pre>

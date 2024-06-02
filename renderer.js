@@ -30,12 +30,23 @@ const profile = document.querySelector("#profile")
 const sqsqueue = document.querySelector("#sqsqueue")
 const msgno = document.querySelector("#msgno")
 const filter = document.querySelector("#filterbox")
+const filterhelper = document.querySelector("#filterinfo")
 const searchbox = document.querySelector("#searchbox")
 const outbox = document.querySelector("#outbox")
+const searchresult = document.querySelector("#searchresult")
 
 
 check.addEventListener('click',checkconnection);
 searchbtn.addEventListener('click', searchText);
+
+
+// when filterinfo is clicked display show a message in alertsection
+filterhelper.addEventListener('click', function(){
+    $("#alertsection").html(
+        '<div class="alert alert-info alert-dismissible" id="exception"><button type="button" class="close" data-dismiss="alert" id="closealert">&times;</button><strong>How Filter Works! &nbsp;</strong> <span class="alerttext"></span></div>'
+        );
+        $(".alerttext").last().text("Filter is applied on the downloaded messages. \n\n To get all matching messages from the queue, please select -1 in the No of Messages field");
+})
 
 function resetByNames(...names){
     names.forEach(name => {
@@ -103,6 +114,17 @@ function searchText(s) {
     const instance = new Mark(outbox);
     instance.unmark(); // remove any previous marks
     instance.mark(search);
+    
+    // no of matches
+    var matches = document.getElementsByTagName("mark").length
+    if (matches < 1){
+        searchresult.innerHTML = "<span style='color: white; background-color: #e76ebc; padding: 1%''>No Matches Found</span>"
+    }else{
+        searchresult.innerHTML = "<span style='color: black; background-color: greenyellow; padding: 1%'>Matches Found: "+matches+"</span>"
+    }
+    // scroll the output box to the searched text
+    var element = document.querySelector("mark");
+    element.scrollIntoView();
 }
 
 form.addEventListener('submit',submitform);
@@ -131,14 +153,26 @@ function submitform(e){
                 // change the color of the border
                 document.querySelector("#msgno").style.boxShadow = "0 0 10px crimson";
             }
+    } else if (msgno < 1 || msgno > 10000)
+    {
+        if (msgno != -1)
+        {
+            document.querySelector("#msgno").focus()
+            // change the color of the border
+            document.querySelector("#msgno").style.boxShadow = "0 0 10px crimson";
+            alert("Please enter a valid number \n\n -1 to list all messages \n or \n any number between 1 to 10000")
+        } else {
+            ipc.send('listqueue', msgno, sqsqueue, region, profile, filter)
+        }
     }
     else
     {
         // Remove the focus and the border color
         document.querySelector("#msgno").style.boxShadow = "0 0 0px";
         document.querySelector("#sqsqueue").style.boxShadow = "0 0 0px";
+        ipc.send('listqueue', msgno, sqsqueue, region, profile, filter)
     } 
-    ipc.send('listqueue', msgno, sqsqueue, region, profile, filter)
+    
 }
 
 const shell = require('electron').shell;
@@ -281,10 +315,25 @@ ipc.on("finalList", function(event, data){
     $(".alerttext").last().text(data);
 })
 
+function applyFilter(dataarray){
+    var filtered = []
+    dataarray.forEach((e, index) => {
+        if (e.Body.includes(filter.value))
+        {
+            filtered.push(e)
+        }
+    });
+    return filtered
+}
+
 no_of_times_called = 1
 
 ipc.on('listqueue', function(event, response){
             
+            var filtered = []
+
+
+
             // Initialize the string buffer
             stringbuffer = "";
             stringbuffer+="\n-----------------------------------"
@@ -293,6 +342,7 @@ ipc.on('listqueue', function(event, response){
             stringbuffer+="\nprofile    :"+profile.value
             if (filter.value != ""){
                 stringbuffer+="\nfilter     :"+filter.value
+                response['messages'] = applyFilter(response['messages'])
                 stringbuffer+="\nMessages Matching Filters: "+response['messages'].length 
             }
             stringbuffer+="\nTotal Messages in the Queue: "+response['stats']['TotalMessages']
@@ -303,10 +353,15 @@ ipc.on('listqueue', function(event, response){
 
             resetAll()
 
-            if(response['messages'].length === 0)
+            
+
+            if(response['messages'].length === 0 && response['stats']['TotalMessages'] === 0)
             {
-                
-                stringbuffer+="\n There are no messages matching the filter criteria or the queue is empty"
+                stringbuffer+="\n The Queue is Empty - No Messages to display"
+            }
+            else if (response['messages'].length === 0 && response['stats']['TotalMessages'] > 0 )
+            {
+                stringbuffer+="\n Queue has "+response['stats']['TotalMessages']+" messages but no messages matching the filter criteria"
             }
             else
             {

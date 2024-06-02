@@ -150,30 +150,53 @@ ipcMain.on('listqueue', function (event, msgno, sqsqueue, region, profile, filte
               approx_notvisible = data.Attributes.ApproximateNumberOfMessagesNotVisible;
               message = 'Approximate Messages Can be read/Visible:' + NoOfMessages + '\nApproximate Messages In Transit/Not Visible:' + approx_notvisible;
               mainWindow.webContents.send('queueinfo', message); // Send the response to the renderer
+              // wait for 2 seconds
+              await new Promise(r => setTimeout(r, 2000));
+
+              var stats = {
+                "OnTransit": approx_notvisible,
+                "TotalMessages": NoOfMessages
+              };
+
+
+              //  Case1: If the queue is empty
               if (parseInt(NoOfMessages) == 0 && approx_notvisible == 0) {
                 message = 'Queue must be empty, No messages in Transit or available state';
                 mainWindow.webContents.send('noMessages', message);
               }
+
+              //  Case2: If the queue has messages but not visible
               else if (parseInt(NoOfMessages) == 0 && approx_notvisible > 0) {
                 message = 'Your messages are in Transit state : ' + approx_notvisible + '\n\nYou need to wait until the Default visibilty timeout, Default 30s';
                 mainWindow.webContents.send('noMessages', message);
               }
+
+              //  Case3: If the queue has messages less than the requested number
               else if (parseInt(NoOfMessages) < parseInt(msgno)) {
+
+                // set the message number to the number of messages in the queue
+                msgno = parseInt(NoOfMessages);
+
                 var TotalReceivedCount = 0;
-                payload = [];
+                payload = {};
+
+                // Add the Approx Not Visible count and the visible messages count to the payload
+                payload['stats'] = stats;
+                payload['messages'] = [];
+
                 var barWidth = 'width: 0%';
                 while (parseInt(TotalReceivedCount) < parseInt(NoOfMessages)) {
                   TotalReceivedCount += 1;
                   try {
                     const data = await sqs.receiveMessage(para);
                     if (data) {
-                      barWidth = 'width: ' + (payload.length / msgno) * 100 + '%';
+                      barWidth = 'width: ' + (payload['messages'].length / msgno) * 100 + '%';
                       mainWindow.webContents.send('barProgress', barWidth);
-                      //console.log(data.Messages.length);
+                      
                       data.Messages.forEach((e, index) => {
-                        payload.push(data.Messages[index]);
+                        payload['messages'].push(data.Messages[index]);
                       });
-                      if (payload.length == parseInt(NoOfMessages)) {
+                      if (payload['messages'].length == parseInt(NoOfMessages)) {
                         message = 'Queue has less messages than you asked, So printing all the messages available.';
                         mainWindow.webContents.send('finalList', message);
                         barWidth = 'width: 100%';
@@ -182,14 +205,14 @@ ipcMain.on('listqueue', function (event, msgno, sqsqueue, region, profile, filte
                         // Applying the filter
                         if (filter != '') {
                           var filteredPayload = [];
-                          payload.forEach((e, index) => {
-                            if (payload[index].Body.includes(filter)) {
-                              filteredPayload.push(payload[index]);
+                          payload['messages'].forEach((e, index) => {
+                            if (payload['messages'][index].Body.includes(filter)) {
+                              filteredPayload.push(payload['messages'][index]);
                             }
                           });
-                          payload = filteredPayload;
+                          payload['messages'] = filteredPayload;
                         }
-
+                        console.log('Payload',payload);
                         mainWindow.webContents.send('listqueue', payload);
                         TotalReceivedCount = 10;
                         return;
@@ -203,35 +226,42 @@ ipcMain.on('listqueue', function (event, msgno, sqsqueue, region, profile, filte
                   }
                 }
               }
+
+              // Case 4: If the queue has messages more than the requested number
               else {
                 var TotalReceivedCount = 0;
-                payload = [];
+                payload = {};
+
+                payload['stats'] = stats;
+                payload['messages'] = [];
+
+                // payload.push(stats);
                 var barWidth = 'width: 0%';
                 while (parseInt(TotalReceivedCount) < parseInt(NoOfMessages)) {
                   TotalReceivedCount += 1;
                   try {
                     const data = await sqs.receiveMessage(para);
                     if (data) {
-                      barWidth = 'width: ' + (payload.length / msgno) * 100 + '%';
+                      barWidth = 'width: ' + (payload['messages'].length / msgno) * 100 + '%';
                       mainWindow.webContents.send('barProgress', barWidth);
                       data.Messages.forEach((e, index) => {
-                        payload.push(data.Messages[index]);
+                        payload['messages'].push(data.Messages[index]);
                       });
-                      if (payload.length >= msgno) {
+                      if (payload['messages'].length >= msgno) {
                         barWidth = 'width: 100%';
                         mainWindow.webContents.send('barProgress', barWidth);
                         // Applying the filter
                         if (filter != '') {
                           var filteredPayload = [];
-                          payload.forEach((e, index) => {
+                          payload['messages'].forEach((e, index) => {
                             // console.log("Searching for: " + filter + " in " + payload[index].Body);
-                            if (payload[index].Body.includes(filter)) {
-                              filteredPayload.push(payload[index]);
+                            if (payload['messages'][index].Body.includes(filter)) {
+                              filteredPayload.push(payload['messages'][index]);
                             }else{
                               // console.log('Not a match')
                             }
                           });
-                          payload = filteredPayload;
+                          payload['messages'] = filteredPayload;
                         }
 
                         mainWindow.webContents.send('listqueue', payload);

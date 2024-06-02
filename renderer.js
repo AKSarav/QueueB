@@ -291,21 +291,27 @@ ipc.on('listqueue', function(event, response){
             stringbuffer+="\nQueue Name :"+sqsqueue.value
             stringbuffer+="\nRegion     :"+region.value
             stringbuffer+="\nprofile    :"+profile.value
-            stringbuffer+="\nfilter     :"+filter.value
+            if (filter.value != ""){
+                stringbuffer+="\nfilter     :"+filter.value
+                stringbuffer+="\nMessages Matching Filters: "+response['messages'].length 
+            }
+            stringbuffer+="\nTotal Messages in the Queue: "+response['stats']['TotalMessages']
+            stringbuffer+="\nMessages On Transit: "+response['stats']['OnTransit']
             stringbuffer+="\nNo of Messages requested: "+document.querySelector("#msgno").value
-            stringbuffer+="\nNo of Matching Messages: "+response.length
             stringbuffer+="\n-----------------------------------"
+            
 
             resetAll()
 
-            if(response.length === 0)
+            if(response['messages'].length === 0)
             {
+                
                 stringbuffer+="\n There are no messages matching the filter criteria or the queue is empty"
             }
             else
             {
-                let data = response;
-                ////console.log(data)
+                let data = response['messages'];
+
                 data.forEach((e, index) => {
                     msgcount=index+1
                     //console.log(e);

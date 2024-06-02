@@ -24,10 +24,8 @@ function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    // set the height to 80% of the screen height
-    height: 767,
-    // set the width to 80% of the screen width
-    width: 1040,
+    height: 830,
+    width: 1123,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -157,7 +155,11 @@ ipcMain.on('listqueue', function (event, msgno, sqsqueue, region, profile, filte
                 "OnTransit": approx_notvisible,
                 "TotalMessages": NoOfMessages
               };
-
+              
+              // If the msg no is -1, then set it to the number of messages in the queue
+              if (msgno == -1){
+                msgno = parseInt(NoOfMessages);
+              }
 
               //  Case1: If the queue is empty
               if (parseInt(NoOfMessages) == 0 && approx_notvisible == 0) {
@@ -201,18 +203,6 @@ ipcMain.on('listqueue', function (event, msgno, sqsqueue, region, profile, filte
                         mainWindow.webContents.send('finalList', message);
                         barWidth = 'width: 100%';
                         mainWindow.webContents.send('barProgress', barWidth);
-
-                        // Applying the filter
-                        if (filter != '') {
-                          var filteredPayload = [];
-                          payload['messages'].forEach((e, index) => {
-                            if (payload['messages'][index].Body.includes(filter)) {
-                              filteredPayload.push(payload['messages'][index]);
-                            }
-                          });
-                          payload['messages'] = filteredPayload;
-                        }
-                        console.log('Payload',payload);
                         mainWindow.webContents.send('listqueue', payload);
                         TotalReceivedCount = 10;
                         return;
@@ -250,20 +240,6 @@ ipcMain.on('listqueue', function (event, msgno, sqsqueue, region, profile, filte
                       if (payload['messages'].length >= msgno) {
                         barWidth = 'width: 100%';
                         mainWindow.webContents.send('barProgress', barWidth);
-                        // Applying the filter
-                        if (filter != '') {
-                          var filteredPayload = [];
-                          payload['messages'].forEach((e, index) => {
-                            // console.log("Searching for: " + filter + " in " + payload[index].Body);
-                            if (payload['messages'][index].Body.includes(filter)) {
-                              filteredPayload.push(payload['messages'][index]);
-                            }else{
-                              // console.log('Not a match')
-                            }
-                          });
-                          payload['messages'] = filteredPayload;
-                        }
-
                         mainWindow.webContents.send('listqueue', payload);
                         
                         TotalReceivedCount = 10;
